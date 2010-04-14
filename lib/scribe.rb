@@ -12,16 +12,16 @@ module LinkingPaths
         def record_activity_of(actor, options = {})
           include_scribe_instance_methods {
             has_many :activities, :as => :item, :dependent => :destroy
-            actions = options[:actions] || [:create, :destroy]
-            actions.each do |action|
-              send "after_#{action}" do |record|
-                unless options[:if].kind_of?(Proc) and not options[:if].call(record)
-                  user = record.send(activity_options[:actor])
-                  Activity.report(user, action, record)
-                end
+          }
+          actions = options[:actions] || [:create, :destroy]
+          actions.each do |action|
+            send "after_#{action}" do |record|
+              unless options[:if].kind_of?(Proc) and not options[:if].call(record)
+                user = record.send(activity_options[:actor])
+                Activity.report(user, action, record)
               end
             end
-          }
+          end
           self.activity_options.merge! :actor => actor
         end
 
